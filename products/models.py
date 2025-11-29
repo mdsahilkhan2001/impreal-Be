@@ -26,7 +26,17 @@ class Product(models.Model):
     
     # MOQ & Lead Time
     moq = models.IntegerField(default=1, help_text='Minimum Order Quantity')
-    lead_time = models.CharField(max_length=100, help_text='e.g., "7-15 days"')
+    lead_time = models.CharField(max_length=100, blank=True, help_text='e.g., "7-15 days"')
+    
+    # Product Features & Material
+    material = models.CharField(max_length=255, blank=True, help_text='Product material')
+    warranty = models.CharField(max_length=255, blank=True, help_text='Warranty information')
+    certifications = models.CharField(max_length=255, blank=True, help_text='Certifications')
+    
+    # Shipping & Payment Terms
+    shipping_terms = models.CharField(max_length=255, blank=True, help_text='Shipping terms')
+    payment_terms = models.CharField(max_length=255, blank=True, help_text='Payment terms')
+    bulk_pricing = models.TextField(blank=True, help_text='Bulk pricing information')
     
     # Customization & Specifications
     customization = models.JSONField(

@@ -1,5 +1,8 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -52,3 +55,26 @@ class User(AbstractUser):
     @property
     def is_admin_role(self):
         return self.role == 'ADMIN'
+
+
+class PasswordResetRequest(models.Model):
+    """Stores password reset OTPs and tokens for email verification."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='password_reset_requests')
+    otp_hash = models.CharField(max_length=128)
+    token = models.CharField(max_length=64, unique=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    verified_at = models.DateTimeField(null=True, blank=True)
+    used_at = models.DateTimeField(null=True, blank=True)
+    attempt_count = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Password reset for {self.user.email} at {self.created_at:%Y-%m-%d %H:%M}'
+
+    @property
+    def is_expired(self):
+        return timezone.now() > self.expires_at

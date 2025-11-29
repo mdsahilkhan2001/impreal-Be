@@ -4,6 +4,7 @@ Django settings for Prime Apparel Exports Backend
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -174,3 +175,26 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
 }
+
+
+# Email Settings
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+
+if EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend' and not os.environ.get('EMAIL_HOST'):
+    # Fallback to console backend when SMTP credentials are missing locally
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true').lower() == 'true'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Prime Apparel CRM <no-reply@primeapparel.com>')
+
+# Password reset configuration
+PASSWORD_RESET_OTP_EXPIRY_MINUTES = int(os.environ.get('PASSWORD_RESET_OTP_EXPIRY_MINUTES', 10))
+PASSWORD_RESET_MAX_ATTEMPTS = int(os.environ.get('PASSWORD_RESET_MAX_ATTEMPTS', 5))
+
+# reCAPTCHA (Google) settings
+RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '')
+RECAPTCHA_SECRET = os.environ.get('RECAPTCHA_SECRET', '')
